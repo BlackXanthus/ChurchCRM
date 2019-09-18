@@ -1,8 +1,11 @@
 #!/usr/bin/env python
 
 import pickle
+import random
 
 from PyQt5 import QtCore
+from PyQt5.QtCore import *
+from PyQt5.QtWidgets import *
 
 from PyQt5.QtCore import QFile, QIODevice, Qt, QTextStream
 from PyQt5.QtWidgets import (QDialog, QFileDialog, QGridLayout, QHBoxLayout,
@@ -37,11 +40,12 @@ class MainWindow(QMainWindow):
 
 		self.initUI()
 		
-		self.setWindowTitle("Xen CRM"+self._version)
+		self.setWindowTitle("Xen CRM "+self._version)
 
 		self.UpdateContacts.connect(self.updateContactsTable)
 
 		self.tableModel = TableModel(self.contacts)
+		self.ui.tableView.setSelectionBehavior(QAbstractItemView.SelectRows)
 		self.ui.tableView.setModel(self.tableModel)
 
 	def temploadFromFile(self):
@@ -107,12 +111,42 @@ class MainWindow(QMainWindow):
 		self.addButton.clicked.connect(self.addContact)
 		self.saveButton.clicked.connect(self.saveToFile)
 
+		self.ui.tableView.doubleClicked.connect(self.editContact)
 
 	def storeContact(self,myContact):
 		#this needs a primary key. Probably should be random
-		number=len(self.contacts)
-		self.contacts[str(number)]=myContact
+		#Perhaps a record of this needs to be kept somewhere?
+		number=random.randint(0,234234222342339983422)	
+
+		if "Key" in myContact:
+				self.contacts[myContact["Key"]]=myContact
+		else:	
+			print("No Key Found, moving to add")
+			theList=list(iter(self.contacts.keys()))	
+			#If the count is creater than 1, then there's trouble!
+			while (theList.count(number) > 0):
+				number=random.randint(0,234234298923423)
+			myContact["Key"]=str(number)
+			self.contacts[myContact["Key"]]=myContact
+
 		self.UpdateContacts.emit("ContactStored")
+
+	def editContact(self, MyIndex):
+	
+		print("Row Selected "+str(MyIndex.row()))
+		myContact = self.tableModel.getItemAtIndex(MyIndex.row())
+		print("Contact Known As:"+myContact["KnownAs"])
+
+		self.contactUi = ContactWindow()
+		self.contactUi.ContactAdd.connect(self.storeContact)
+
+		#Fill out the data
+
+		self.contactUi.setData(myContact)
+
+		self.contactUi.show()
+
+
 
 	def saveToFile(self):
 		fileName, _ = QFileDialog.getSaveFileName(self, "Save Address Book",
