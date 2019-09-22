@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'CRM-V1.ui'
+# Form implementation generated from reading ui file 'crmV1.ui'
 #
 # Created by: PyQt5 UI code generator 5.10.1
 #
@@ -48,6 +48,9 @@ class Ui_MainWindow(object):
         self.buttonSave = QtWidgets.QPushButton(self.Buttons)
         self.buttonSave.setObjectName("buttonSave")
         self.verticalLayout.addWidget(self.buttonSave)
+        self.buttonUndo = QtWidgets.QPushButton(self.Buttons)
+        self.buttonUndo.setObjectName("buttonUndo")
+        self.verticalLayout.addWidget(self.buttonUndo)
         self.buttonExport = QtWidgets.QPushButton(self.Buttons)
         self.buttonExport.setObjectName("buttonExport")
         self.verticalLayout.addWidget(self.buttonExport)
@@ -94,6 +97,7 @@ class Ui_MainWindow(object):
         self.buttonFind.setText(_translate("MainWindow", "Find"))
         self.buttonLoad.setText(_translate("MainWindow", "Load"))
         self.buttonSave.setText(_translate("MainWindow", "Save"))
+        self.buttonUndo.setText(_translate("MainWindow", "Undo"))
         self.buttonExport.setText(_translate("MainWindow", "Export"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.People), _translate("MainWindow", "People"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("MainWindow", "Tab 2"))
