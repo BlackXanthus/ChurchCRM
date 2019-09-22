@@ -2,6 +2,7 @@
 
 import pickle
 import random
+import copy
 
 from PyQt5 import QtCore
 from PyQt5.QtCore import *
@@ -105,11 +106,20 @@ class MainWindow(QMainWindow):
  
 		self.saveButton = self.ui.buttonSave
 		self.saveButton.setToolTip("Save contacts to a file")
+
+		self.deleteButton = self.ui.buttonRemove
+		self.deleteButton.setToolTip("Delete Contact")
+
+		self.undoButton = self.ui.buttonUndo
+		self.undoButton.setToolTip("Undo Contact Removal")
+		self.undoButton.setEnabled(False)
 		
    #Adding Connections	  
 		self.loadButton.clicked.connect(self.temploadFromFile)
 		self.addButton.clicked.connect(self.addContact)
 		self.saveButton.clicked.connect(self.saveToFile)
+		self.deleteButton.clicked.connect(self.removeContact)
+		self.undoButton.clicked.connect(self.undoContactRemoval)
 
 		self.ui.tableView.doubleClicked.connect(self.editContact)
 
@@ -122,7 +132,7 @@ class MainWindow(QMainWindow):
 				self.contacts[myContact["Key"]]=myContact
 		else:	
 			print("No Key Found, moving to add")
-			theList=list(iter(self.contacts.keys()))	
+			theList=list(iter(self.Contacts.keys()))	
 			#If the count is creater than 1, then there's trouble!
 			while (theList.count(number) > 0):
 				number=random.randint(0,234234298923423)
@@ -130,6 +140,13 @@ class MainWindow(QMainWindow):
 			self.contacts[myContact["Key"]]=myContact
 
 		self.UpdateContacts.emit("ContactStored")
+
+
+	def undoContactRemoval(self):
+		tempContacts = copy.deepcopy(self.contacts)
+		self.contacts = copy.deepcopy(self.undoContacts)
+		self.undoContacts = copy.deepcopy(tempContacts)
+		self.UpdateContacts.emit("ContactRemoved")
 
 	def editContact(self, MyIndex):
 	
@@ -146,7 +163,18 @@ class MainWindow(QMainWindow):
 
 		self.contactUi.show()
 
+	def removeContact(self):
 
+		indexes = self.ui.tableView.selectionModel().selectedRows()
+		for index in sorted(indexes):
+			print('Row %d is selected' % index.row())
+			item =self.tableModel.getItemAtIndex(index.row())
+			print("Name For Removal:" + item["FirstName"])
+			
+			self.undoContacts = copy.deepcopy(self.contacts)
+			del self.contacts[item["Key"]]
+			self.undoButton.setEnabled(True)
+			self.UpdateContacts.emit("ContactRemoved")
 
 	def saveToFile(self):
 		fileName, _ = QFileDialog.getSaveFileName(self, "Save Address Book",

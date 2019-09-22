@@ -80,6 +80,13 @@
             </widget>
            </item>
            <item>
+            <widget class="QPushButton" name="buttonUndo">
+             <property name="text">
+              <string>Undo</string>
+             </property>
+            </widget>
+           </item>
+           <item>
             <widget class="QPushButton" name="buttonExport">
              <property name="text">
               <string>Export</string>
